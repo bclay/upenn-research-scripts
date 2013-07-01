@@ -4,7 +4,9 @@
 #inputs:
 #0: output from study_similarity_profiles.pl
 #(comparisonID, SE, description, profile)
-#
+#1: homologenecomparison
+#2: normal output
+#3?: Out file
 
 use strict;
 use warnings;
@@ -42,7 +44,7 @@ close HGCV;
 
 
 open(SEFILE, "<$ARGV[0]") or die "error reading $ARGV[0]";
-open(OUT2, ">$ARGV[3]") or die "error reading $ARGV[3]";
+#open(OUT2, ">$ARGV[3]") or die "error reading $ARGV[3]";
 #parse the input file 
 while(<SEFILE>){
 	chomp;
@@ -104,7 +106,7 @@ while(<SEFILE>){
 				else{
 					$HoHG{$hgene} = $useVal;
 				}
-				print OUT2 "$hgene\t$compID\t$useVal\t$HoHG{$hgene}\n";
+				#print OUT2 "$hgene\t$compID\t$useVal\t$HoHG{$hgene}\n";
 
 			}
 		}
@@ -115,11 +117,10 @@ while(<SEFILE>){
 	}	
 }
 close SEFILE;
-close OUT2;
+#close OUT2;
 
 for my $hgene34 (keys %HoHG){
-	print "$hgene34\t$HoHG{$hgene34}\n";
-
+	#print "$hgene34\t$HoHG{$hgene34}\n";
 }
 
 
