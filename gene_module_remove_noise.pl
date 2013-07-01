@@ -17,7 +17,7 @@ my %hundredLines;
 my $count;
 my $line;
 my $val;
-
+my @lineSplit;
 
 #loop to do for each file
 
@@ -30,7 +30,13 @@ foreach my $file (@FILES){
 sub getHundred{
 	while($_[$count] && $count < 100){
 		$val = 100 - $count;
-		print "$_[$count]\t$val\n";
+		@lineSplit = split('\t',$_[$count]);
+		if (exists $hundredLines{$lineSplit[0]}){
+			$hundredLines{$lineSplit[0]}+=$val;
+		}
+		else{
+			$hundredLines{$lineSplit[0]} = $val;
+		}
 		$count++;
 	}
 }
@@ -42,3 +48,6 @@ foreach my $key (keys %data){
 	print "\n"
 }
 
+foreach my $hgene (sort {$hundredLines{$b} <=> $hundredLines{$a}} keys %hundredLines){
+	print "$hgene\t$hundredLines{$hgene}\n";
+}
