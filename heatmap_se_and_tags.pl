@@ -43,6 +43,7 @@ my $SE;
 my $first;
 my $total;
 my $zeros;
+my $maxLen;
 
 #parse the gene list and build the data structure
 while(<HGENES>){
@@ -54,6 +55,8 @@ while(<HGENES>){
 	#find all lines with that hgene 
 	@temp = qx(grep -w "$hgene" "$ARGV[1]");
 	
+	$maxLen = 1;
+	
 	#iterate through each line with that hgene to extract relevent info
 	foreach (@temp){
 		chomp;
@@ -64,6 +67,9 @@ while(<HGENES>){
 		#if the current compID is already in the HoA
 		if (exists $HoA{$tokens[1]}){
 			push (@{$HoA{$tokens[1]}},$tokens[2]);
+			if (scalar @{$HoA{$tokens[1]}} > $maxLen){
+				$maxLen = scalar @{$HoA{$tokens[1]}};
+			}
 			#print "$tokens[1]; @{$HoA{$tokens[1]}}\n";
 		}
 		else{
@@ -83,6 +89,11 @@ sub entropy{
 	$entropy / log 2
 }
 
+sub notSE{
+	my %counts;
+	$counts{$_}++ for @_;
+	
+}
 
 #parse the data structure for relevant info
 while(($key,@value) = each %HoA){ 
@@ -99,7 +110,7 @@ while(($key,@value) = each %HoA){
 		$zeros = 0;
 		foreach (@{$HoA{$key}}){
 			$total = $total + 1; 
-			if ($_ eq "0"){
+			if ($_ eq "0" || $_ eq "N"){
 				$zeros = $zeros + 1;
 			} 
 		}
