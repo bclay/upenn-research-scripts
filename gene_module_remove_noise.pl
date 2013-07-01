@@ -9,19 +9,21 @@
 use strict;
 use warnings;
 
-open(FILE, "<ARGV[0]") or die "error reading $ARGV[0]";
-
 
 #variable declarations
+my @FILES = @ARGV;
+my %data;
 
 
+#loop to do for each file
 
-#subrountine to do for each file
+foreach my $file (@FILES){
+	local $/ = undef;
+	open my $fh, '<', $file;
+	$data{$file} = <$fh>;
+}
 
-#sub fileparser{ 
+foreach my $key (keys %data){
+	print $data{$key};
+}
 
-
-
-
-
-close FILE;
