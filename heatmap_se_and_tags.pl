@@ -89,11 +89,6 @@ sub entropy{
 	$entropy / log 2
 }
 
-sub notSE{
-	my %counts;
-	$counts{$_}++ for @_;
-	
-}
 
 #parse the data structure for relevant info
 while(($key,@value) = each %HoA){ 
