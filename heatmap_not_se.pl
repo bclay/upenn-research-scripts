@@ -69,7 +69,13 @@ close HGENES;
 sub notSE{
 	my %counts;
 	$counts{$_}++ for @_;
-	
+	my $entropy = 0;
+	foreach my $cell_val (keys %counts){
+		if ($counts($cell_val) > $entropy){
+			$entropy = $counts($cell_val);
+		}
+	}
+	return $entropy;
 }
 
 #parse the data structure for relevant info
