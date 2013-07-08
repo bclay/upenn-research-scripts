@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-#determines comparison IDs of importance without using Shannon Entropy
+#determines comparison IDs of importance with an altered Shannon Entropy
 #input:
 #0: homologene list
 #1: homologenecomparisonvalues.txt
@@ -14,11 +14,10 @@ open(HGENES, "<$ARGV[0]") or die "error reading $ARGV[0]";
 #initialize variables
 my $hgene;
 my @temp;
-my $maxLen;
 my $line;
 my @tokens;
 my %HoA;
-my $NSE;
+my $SE;
 my $key;
 my @value;
 my $first;
@@ -28,6 +27,7 @@ my %HoSE;
 my @comptable;
 my $line2;
 my @tokens2;
+my @altArr;
 
 
 #parse the gene list and build the data structure
@@ -40,7 +40,6 @@ while(<HGENES>){
 	#find all lines with that hgene 
 	@temp = qx(grep -w "$hgene" "$ARGV[1]");
 	
-	$maxLen = 1;
 	
 	#iterate through each line with that hgene to extract relevent info
 	foreach (@temp){
@@ -52,9 +51,6 @@ while(<HGENES>){
 		#if the current compID is already in the HoA
 		if (exists $HoA{$tokens[1]}){
 			push (@{$HoA{$tokens[1]}},$tokens[2]);
-			if (scalar @{$HoA{$tokens[1]}} > $maxLen){
-				$maxLen = scalar @{$HoA{$tokens[1]}};
-			}
 		}
 		else{
 			#add a k-v to a hash, where comparisonID->[values]
@@ -64,38 +60,70 @@ while(<HGENES>){
 }
 close HGENES;
 
+#finds the maximum profile length
+my $maxProf = 0;
+foreach my $k (keys %HoA){
+	if ($maxProf < scalar @{$HoA{$k}}){
+		$maxProf = scalar @{$HoA{$k}};
+	}
+}
 
 
-sub notSE{
-	my %counts;
-	$counts{$_}++ for @_;
+
+sub entropy{
+	my %count;
+	$count{$_}++ for @_;
+	my @p = map $_/@_, values %count;
 	my $entropy = 0;
-	foreach my $cell_val (keys %counts){
-		if ($counts{$cell_val} > $entropy){
-			$entropy = $counts{$cell_val};
+	$entropy += - $_ * log $_ for @p;
+	$entropy / log 2
+}
+
+sub alteredArr{
+	my @altArr = @_;
+	while ($maxProf > scalar @altArr){
+		if ($altArr[0] eq 'Y' || $altArr[0] eq 'N'){
+			push (@altArr, 'N');
+		}
+		else{
+			push (@altArr, '0');
 		}
 	}
-	return $entropy;
+	print join (",", @altArr);
+	print "\n";
+	@altArr;
 }
 
 #parse the data structure for relevant info
 while(($key,@value) = each %HoA){ 
-	$NSE = notSE @{$HoA{$key}};
-	$first = @{$HoA{$key}}[0];
-	if ($NSE == 0 && $first ne "1" && $first ne "-1" && $first ne "Y"){
+	@altArr = @{$HoA{$key}};
+	while ($maxProf > scalar @altArr){
+		if ($altArr[0] eq 'Y' || $altArr[0] eq 'N'){
+			push (@altArr, 'N');
+		}
+		else{
+			push (@altArr, '0');
+		}
+	}
+	#print join (",", @altArr);
+	#print "\n";
+	$SE = entropy @altArr;
+	$first = $altArr[0];
+	@{$HoA{$key}} = @altArr;
+	if ($SE == 0 && $first ne "1" && $first ne "-1" && $first ne "Y"){
 		#do nothing
 	}
 	else{
 		$total = 0;
 		$zeros = 0;
-		foreach (@{$HoA{$key}}){
+		foreach (@altArr){
 			$total = $total + 1; 
 			if ($_ eq "0" || $_ eq "N"){
 				$zeros = $zeros + 1;
 			} 
 		}
 		if ($zeros / $total <= 0.5){
-			$HoSE{$key} = $NSE;
+			$HoSE{$key} = $SE;
 		}
 		
 	}

@@ -1,5 +1,6 @@
+
 #!/usr/bin/perl
-#determines comparison IDs of importance without using Shannon Entropy
+#determines comparison IDs of importance with Shannon Entropy and another metric
 #input:
 #0: homologene list
 #1: homologenecomparisonvalues.txt
@@ -18,6 +19,7 @@ my $maxLen;
 my $line;
 my @tokens;
 my %HoA;
+my $SE;
 my $NSE;
 my $key;
 my @value;
@@ -64,7 +66,14 @@ while(<HGENES>){
 }
 close HGENES;
 
-
+sub entropy{
+	my %count;
+	$count{$_}++ for @_;
+	my @p = map $_/@_, values %count;
+	my $entropy = 0;
+	$entropy += - $_ * log $_ for @p;
+	$entropy / log 2
+}
 
 sub notSE{
 	my %counts;
@@ -80,9 +89,10 @@ sub notSE{
 
 #parse the data structure for relevant info
 while(($key,@value) = each %HoA){ 
+	$SE = entropy @{$HoA{$key}};
 	$NSE = notSE @{$HoA{$key}};
 	$first = @{$HoA{$key}}[0];
-	if ($NSE == 0 && $first ne "1" && $first ne "-1" && $first ne "Y"){
+	if ($SE == 0 && $first ne "1" && $first ne "-1" && $first ne "Y"){
 		#do nothing
 	}
 	else{
@@ -95,7 +105,7 @@ while(($key,@value) = each %HoA){
 			} 
 		}
 		if ($zeros / $total <= 0.5){
-			$HoSE{$key} = $NSE;
+			$HoSE{$key} = $NSE - $SE;
 		}
 		
 	}
@@ -104,7 +114,7 @@ while(($key,@value) = each %HoA){
 
 open(OUT1, ">$ARGV[3]") or die "error opening $ARGV[3]";
 
-foreach my $key2 (sort {($HoSE{$a} cmp $HoSE{$b})} keys %HoSE){
+foreach my $key2 (sort {($HoSE{$b} cmp $HoSE{$a})} keys %HoSE){
 	@comptable = qx(grep -w "$key2" "$ARGV[2]");
 	foreach (@comptable){
 		chomp;
