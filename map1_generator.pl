@@ -19,7 +19,7 @@ while (<SMALL>){
 close SMALL;
 open(OUT, ">>$ARGV[2]") or die "error reading $ARGV[2]"; 
 
-@hgenes = @homologenes;
+push(@hgenes,@homologenes);
 
 foreach my $hgene1 (@homologenes){
 	shift (@hgenes);
@@ -28,10 +28,10 @@ foreach my $hgene1 (@homologenes){
 		for my $hgene2 (@hgenes){
 			for my $line (@temparr){
 				@tokens = split(/\t/, $line);
-				if ($tokens[0] eq $hgene2){
+				if ($tokens[0] eq $hgene2 && $tokens[1] eq $hgene1){
 					print OUT $line;
 				}
-				if ($tokens[1] eq $hgene2){
+				elsif ($tokens[1] eq $hgene2 && $tokens[0] eq $hgene1){
 					print OUT $line;
 				}
 			}
