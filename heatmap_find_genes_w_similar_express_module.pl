@@ -18,7 +18,7 @@ my %HoH;
 my $line;
 my @tokens;
 my %HoHG;
-
+my $totalc;
 my $line2;
 my @tokens2;
 my $compID;
@@ -41,7 +41,7 @@ while (<HGCV>){
 }
 close HGCV;
 
-
+my $compIDCount = 0;
 
 open(SEFILE, "<$ARGV[0]") or die "error reading $ARGV[0]";
 #open(OUT2, ">$ARGV[3]") or die "error reading $ARGV[3]";
@@ -55,7 +55,7 @@ while(<SEFILE>){
 	$compProf = $tokens2[3];
 	
 	
-	if ($SE < 1){
+	#if ($SE < 1){
 	#print OUT2 "$compID\t$SE\t$compProf\n";
 		@cellVals = split(/ /, $compProf);
 		
@@ -74,10 +74,13 @@ while(<SEFILE>){
 		#find the dominant value, which is the value that shows up in the profile over 50% of the time
 		$domValVal = 0;
 		$domVal = 0;
+		$totalc = 0;
 		foreach my $key (keys %HoCV){
+			$totalc = $totalc + $HoCV{$key};
 			#print OUT2 "$compID\t$key\t$HoCV{$key}\n";
 			if ($domValVal < $HoCV{$key}){
 				$domVal = $key;
+				$domValVal = $HoCV{$key};
 			}
 		}
 
@@ -85,14 +88,15 @@ while(<SEFILE>){
 		
 		#create a hash where the key is the compID and the value is [SE,domVal]
 		#iterate through the HoH, going 1 hgene at a time, and compare values to expected profile values
-
+		if ($domValVal/$totalc >= 0.5){
+		$compIDCount++;
 		foreach my $hgene (keys %{$HoH{$compID}}){
 
 			if ($SE == 0){
 				$useVal = 10;
 			}
 			else {
-				$useVal = 1/$SE;
+				$useVal = 1/($SE+1);
 			}
 			
 			#print "$useVal\n";
@@ -100,33 +104,33 @@ while(<SEFILE>){
 			if ($HoH{$compID}{$hgene} eq $domVal){
 				if (exists $HoHG{$hgene}){
 					$HoHG{$hgene} = $HoHG{$hgene} + $useVal;
-					#print "Does this ever happen?\n";
 				}
 				
 				else{
 					$HoHG{$hgene} = $useVal;
 				}
-				#print OUT2 "$hgene\t$compID\t$useVal\t$HoHG{$hgene}\n";
 
 			}
 		}
-
+		}
 		foreach (keys %HoCV){
 			delete $HoCV{$_};
 		}
-	}	
+	#}	
 }
 close SEFILE;
 #close OUT2;
 
-for my $hgene34 (keys %HoHG){
+#for my $hgene34 (keys %HoHG){
 	#print "$hgene34\t$HoHG{$hgene34}\n";
-}
-
+#}
+my $normalized;
 
 open(OUT, ">$ARGV[2]") or die "error reading $ARGV[2]";
 
 for my $hgene2 (sort{($HoHG{$b} <=> $HoHG{$a})} keys %HoHG){
-	print OUT "$hgene2\t$HoHG{$hgene2}\n";
+	#print OUT "$hgene2\n";
+	$normalized = $HoHG{$hgene2} / $compIDCount;
+	print OUT "$hgene2\t$HoHG{$hgene2}\t$normalized\n";
 }
 close OUT;
