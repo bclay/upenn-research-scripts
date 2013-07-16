@@ -28,6 +28,12 @@ my @comptable;
 my $line2;
 my @tokens2;
 my @altArr;
+my %HoT;
+my ($studyID, $key2, $key3, $line3, $tag);
+my (@value3, @studyannot, @tokens3);
+
+
+
 
 
 #parse the gene list and build the data structure
@@ -78,7 +84,7 @@ sub entropy{
 	$entropy += - $_ * log $_ for @p;
 	$entropy / log 2
 }
-/**
+
 sub alteredArr{
 	my @altArr = @_;
 	while ($maxProf > scalar @altArr){
@@ -93,7 +99,7 @@ sub alteredArr{
 	print "\n";
 	@altArr;
 }
-**/
+
 #parse the data structure for relevant info
 while(($key,@value) = each %HoA){ 
 	@altArr = @{$HoA{$key}};
@@ -130,7 +136,7 @@ while(($key,@value) = each %HoA){
 }
 
 
-open(OUT1, ">$ARGV[3]") or die "error opening $ARGV[3]";
+open(OUT1, ">$ARGV[4]") or die "error opening $ARGV[4]";
 
 foreach my $key2 (sort {($HoSE{$a} cmp $HoSE{$b})} keys %HoSE){
 	@comptable = qx(grep -w "$key2" "$ARGV[2]");
@@ -142,24 +148,6 @@ foreach my $key2 (sort {($HoSE{$a} cmp $HoSE{$b})} keys %HoSE){
 			print OUT1 "$tokens2[0]\t$HoSE{$key2}\t$tokens2[2]\t";
 			print OUT1 "@{$HoA{$key2}}\n";
 			
-		}
-	}
-}
-close OUT1;
-
-/**
-
-open(OUT1, ">$ARGV[4]") or die "error opening $ARGV[4]";
-
-foreach my $key2 (sort {($HoSE{$a} cmp $HoSE{$b})} keys %HoSE){
-	@comptable = qx(grep -w "$key2" "$ARGV[2]");
-	foreach (@comptable){
-		chomp;
-		$line2 = $_;
-		@tokens2 = split (/\t/,$line2); **/ /**
-		if ($tokens2[0] eq $key2){
-			print OUT1 "$tokens2[0]\t$HoSE{$key2}\t$tokens2[2]\t";
-			print OUT1 "@{$HoA{$key2}}\n";
 			
 			$studyID = $tokens2[1];
 
@@ -171,7 +159,6 @@ foreach my $key2 (sort {($HoSE{$a} cmp $HoSE{$b})} keys %HoSE){
 				@tokens3 = split (/\t/,$line3);
 				$tag = $tokens3[2];
 			
-/**
 			#if the current studyID is already in the HoT
 			if (exists $HoT{$tag}){
 				${$HoT{$tag}}[0] = ${$HoT{$tag}}[0] + 1;
@@ -187,12 +174,12 @@ foreach my $key2 (sort {($HoSE{$a} cmp $HoSE{$b})} keys %HoSE){
 }
 close OUT1;
 
+
 while(($key3,@value3) = each %HoT){ 
 	${$HoT{$key3}}[2] = ${$HoT{$key3}}[1]/${$HoT{$key3}}[0];
 
 }
 
-/**
 open(OUT2, ">$ARGV[5]") or die "error opening $ARGV[5]";
 
 foreach my $key4 (sort {${$HoT{$a}}[2] cmp ${$HoT{$b}}[2]} keys %HoT){
@@ -202,4 +189,3 @@ foreach my $key4 (sort {${$HoT{$a}}[2] cmp ${$HoT{$b}}[2]} keys %HoT){
 }
 close OUT2;
 
-**/
