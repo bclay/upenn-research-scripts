@@ -1,0 +1,10 @@
+# script of R commands 
+library(igraph)
+g <- graph.data.frame(d,directed=FALSE)
+print(g)
+print(graph.density(g))
+print(clusters(g)$no)
+print(transitivity(g,"global"))
+print(graph.adhesion(g))
+print(diameter(g))
+print(average.path.length(g))
