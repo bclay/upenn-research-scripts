@@ -18,9 +18,27 @@ use Statistics::R;
 
 
 #variables
-
-
-
+my $count = 0;
 
 #import a list of genes (on Arda figure and genes that have already been added)
-open (TOADD, "ARGV[]") or die "error reading $ARGV[]";
+open (INITLIST, "ARGV[0]") or die "error reading $ARGV[0]";
+while (<INITLIST>){
+	my $hgene1 = $_;
+	
+
+
+}
+
+#import the list of genes to add
+open (TOADD, "ARGV[1]") or die "error reading $ARGV[1]";
+while (<TOADD> && $count < 10){
+  
+	$count++;
+}
+
+
+
+#read an R script
+my $R = Statistics::R->new();
+#$R->[command]
+$R->stop();
