@@ -23,19 +23,19 @@ my $count = 0;
 my %InitList;
 
 #import a list of genes (on Arda figure and genes that have already been added)
-open (INITLIST, "ARGV[0]") or die "error reading $ARGV[0]";
+open (INITLIST, "<ARGV[0]") or die "error reading $ARGV[0]";
 while (<INITLIST>){
 	chomp;
 	my $hgene1 = $_;
 	$InitList{$hgnene1} = 1;
 }
+close INITLIST;
 
 #import the list of genes to add
-open (TOADD, "ARGV[1]") or die "error reading $ARGV[1]";
-while (<TOADD> && $count < 10){
-  	chomp;
-	$hgene2 = $_;
-
+open (TOADD, "<ARGV[1]") or die "error reading $ARGV[1]";
+do{
+	$hgene2 = <TOADD>;
+  	chomp($hgene2);
 
 
 	#run the map1 perl script
@@ -50,3 +50,10 @@ while (<TOADD> && $count < 10){
 	$R->stop();
 	$count++;
 }
+until eof || $count == 10;
+close TOADD;
+
+#update the initlist
+open (INITLIST2, ">ARGV[0]") or die "error reading $ARGV[0]";
+
+close INITLIST2;
