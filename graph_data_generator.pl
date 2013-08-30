@@ -38,10 +38,12 @@ do{
   	chomp($hgene2);
 
 
-	#run the map1 perl script
-	local @ARGV = ("", "");
-
+	
 	my $str = "F2_" . $hgene2 . "_M1.txt";
+
+	#run the map1 perl script
+	local @ARGV = ("F2_added_hgenes.txt", "Database1v10.txt", "$str");
+
 	#read an R script
 	my $R = Statistics::R->new();
 	$R->startR;
