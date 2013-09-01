@@ -21,6 +21,7 @@ use IPC::System::Simple qw(system capture);
 #variables
 my $count = 0;
 my %InitList;
+my %AddList;
 
 #import a list of genes (on Arda figure and genes that have already been added)
 open (INITLIST, "<ARGV[0]") or die "error reading $ARGV[0]";
@@ -36,26 +37,32 @@ open (TOADD, "<ARGV[1]") or die "error reading $ARGV[1]";
 do{
 	$hgene2 = <TOADD>;
   	chomp($hgene2);
-
-
+	if (!(exists $InitList{$hgene2}) || !(exists $AddList{$hgene2})){
+		$AddList{$hgene2}
+		
 	
-	my $str = "F2_" . $hgene2 . "_M1.txt";
+		my $str = "F2_" . $hgene2 . "_M1.txt";
 
-	#run the map1 perl script
-	local @ARGV = ("F2_added_hgenes.txt", "Database1v10.txt", "$str");
+		#run the map1 perl script
+		local @ARGV = ("F2_added_hgenes.txt", "Database1v10.txt", "$str");
 
-	#read an R script
-	my $R = Statistics::R->new();
-	$R->startR;
-	$R-> send(q'd <-read.delim("$str",header=F)');
-	$R-> send(q'source("./../../../../upenn_research_scripts/Arda_stat_generator.r")');
-	$R->stop();
-	$count++;
+		#read an R script
+		my $R = Statistics::R->new();
+		$R->startR;
+		$R-> send(q'd <-read.delim("$str",header=F)');
+		$R-> send(q'source("./../../../../upenn_research_scripts/Arda_stat_generator.r")');
+		$R->stop();
+		$count++;
+	}
 }
 until eof || $count == 10;
 close TOADD;
 
 #update the initlist
 open (INITLIST2, ">ARGV[0]") or die "error reading $ARGV[0]";
+
+foreach my $key (keys %{$AddList}){
+	print INITLIST2 "$key\n";
+}
 
 close INITLIST2;
