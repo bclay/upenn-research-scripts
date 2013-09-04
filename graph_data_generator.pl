@@ -32,6 +32,7 @@ while (<INITLIST>){
 	chomp;
 	$hgene1 = $_;
 	$InitList{$hgene1} = 1;
+	#print $hgene1 . "\t$InitList{$hgene1}\n";
 }
 close INITLIST;
 
@@ -40,11 +41,12 @@ open (TOADD, "<$ARGV[1]") or die "error reading $ARGV[1]";
 do{
 	$hgene2 = <TOADD>;
   	chomp($hgene2);
-	if (!(exists $InitList{$hgene2}) || !(exists $AddList{$hgene2})){
-		$AddList{$hgene2};
+	#print "\t\t" . $hgene2;
+	if (!(exists $InitList{$hgene2}) && !(exists $AddList{$hgene2})){
+		$AddList{$hgene2} = 1;
 	
 		$str = "F2_" . $hgene2 . "_M1.txt";
-		print $str;
+		print $str . "\n";
 =comment
 		#run the map1 perl script
 		local @ARGV = ("map1_generator.pl", "F2_added_hgenes.txt", "Database1v10.txt", "$str");
