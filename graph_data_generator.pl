@@ -6,7 +6,8 @@
 #ARGS:
 #0:IN:intital gene list
 #1:IN:results list (genes to add)
-#2:IN:DB
+#2:IN:list of hgenes with no values in graph
+#3:IN:DB
 #
 #OUT:combined list of genes
 #OUT:table with graph stats
@@ -22,9 +23,12 @@ use IPC::System::Simple qw(system capture);
 my $count = 0;
 my %InitList;
 my %AddList;
+my %IgnoreList;
 my $hgene2;
 my $hgene1;
+my $hgene3;
 my $str;
+my @lines;
 
 #import a list of genes (on Arda figure and genes that have already been added)
 open (INITLIST, "<$ARGV[0]") or die "error reading $ARGV[0]";
@@ -36,23 +40,42 @@ while (<INITLIST>){
 }
 close INITLIST;
 
+#import a list of genes (genes to be ignored)
+open (IGNORELIST, "<$ARGV[2]") or die "error reading $ARGV[2]";
+while (<IGNORELIST>){
+	chomp;
+	$hgene3 = $_;
+	$IgnoreList{$hgene3} = 1;
+	#print $hgene1 . "\t$InitList{$hgene1}\n";
+}
+close IGNORELIST;
+
 #import the list of genes to add
 open (TOADD, "<$ARGV[1]") or die "error reading $ARGV[1]";
+open (ADDTO, ">>$ARGV[0]") or die "error reading $ARGV[0]";
+
 do{
 	$hgene2 = <TOADD>;
   	chomp($hgene2);
-	#print "\t\t" . $hgene2;
-	if (!(exists $InitList{$hgene2}) && !(exists $AddList{$hgene2})){
+	#print "\t\t" . $hgene2 . "\n";
+	if (!(exists $InitList{$hgene2}) && !(exists $AddList{$hgene2}) && !(exists $IgnoreList{$hgene2})){
+		@lines = qx (grep -w "$hgene2" "$ARGV[3]");
+		if (@lines){
+		
 		$AddList{$hgene2} = 1;
 	
 		$str = "F2_" . $hgene2 . "_M1.txt";
 		print $str . "\n";
-=comment
+
+		#add current hgene to file
+		print ADDTO "$hgene2\n";
+
 		#run the map1 perl script
 		local @ARGV = ("map1_generator.pl", "F2_added_hgenes.txt", "Database1v10.txt", "$str");
 		system("perl", @ARGV);
 
 
+=comment
 		#read an R script
 		my $R = Statistics::R->new();
 		$R->startR;
@@ -60,7 +83,11 @@ do{
 		$R-> send(q'source("./../../../../upenn_research_scripts/Arda_stat_generator.r")');
 		$R->stop();
 =cut
-		$count++; 
+		$count++;
+		}	
+		else{
+			#add to empty list
+		}
 	}
 }
 until eof || $count == 10;
