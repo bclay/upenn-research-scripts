@@ -74,14 +74,19 @@ do{
 		local @ARGV = ("map1_generator.pl", "F2_added_hgenes.txt", "Database1v10.txt", "$str");
 		system("perl", @ARGV);
 
-
-=comment
+		$str = "./" . $str;
 		#read an R script
 		my $R = Statistics::R->new();
 		$R->startR;
-		$R-> send(q'd <-read.delim("$str",header=F)');
-		$R-> send(q'source("./../../../../upenn_research_scripts/Arda_stat_generator.r")');
+		$R-> send(qq'd <-read.delim("$str",header=F)');
+		#my $command = q'd <-read.delim("./$str",header=F)';
+		#print "Running [$command]\n";
+		#$R->send($command);
+		$R-> send(q'source("./Arda_stat_generator.r")');
+		my $output = $R->get('rstr');
+		print "$output";
 		$R->stop();
+=comment
 =cut
 		$count++;
 		}	
@@ -90,8 +95,9 @@ do{
 		}
 	}
 }
-until eof || $count == 10;
+until eof || $count == 2;
 close TOADD;
+close ADDTO;
 
 =comment
 #update the initlist
