@@ -83,7 +83,9 @@ do{
 		#print "Running [$command]\n";
 		#$R->send($command);
 		$R-> send(q'source("./Arda_stat_generator.r")');
-		my $output = $R->get('rstr');
+		#my $output = $R->get('rstr');
+		$R -> send('cat(z, "\t", y, "\t", x, "\t", w, "\t", v, "\t", t, "\t", s, "\t", r, "\n")');
+		my $output = $R -> read();
 		print "$output";
 		$R->stop();
 =comment
