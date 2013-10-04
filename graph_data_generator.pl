@@ -8,9 +8,7 @@
 #1:IN:results list (genes to add)
 #2:IN:list of hgenes with no values in graph
 #3:IN:DB
-#
-#OUT:combined list of genes
-#OUT:table with graph stats
+#4:OUT:table with graph stats
 
 
 use strict;
@@ -29,6 +27,10 @@ my $hgene1;
 my $hgene3;
 my $str;
 my @lines;
+my @newIgnore;
+my @Rstats;
+my @OneRstat;
+
 
 #import a list of genes (on Arda figure and genes that have already been added)
 open (INITLIST, "<$ARGV[0]") or die "error reading $ARGV[0]";
@@ -84,9 +86,11 @@ do{
 		#$R->send($command);
 		$R-> send(q'source("./Arda_stat_generator.r")');
 		#my $output = $R->get('rstr');
-		$R -> send('cat(z, "\t", y, "\t", x, "\t", w, "\t", v, "\t", t, "\t", s, "\t", r, "\n")');
+		#$R -> send('cat(z, "\t", y, "\t", x, "\t", w, "\t", v, "\t", t, "\t", s, "\t", r, "\n")');
+		$R -> send('cat(z,y,x,w,v,t,s,r,"\n")');
 		my $output = $R -> read();
-		print "$output";
+		$output = $hgene2 . " " . $output;
+		push(@Rstats, $output);
 		$R->stop();
 =comment
 =cut
@@ -94,12 +98,39 @@ do{
 		}	
 		else{
 			#add to empty list
+			push(@newIgnore, $hgene2);
 		}
 	}
 }
-until eof || $count == 2;
+until eof || $count == 53;
 close TOADD;
 close ADDTO;
+
+
+open (IGNORELIST2, ">>$ARGV[2]") or die "error reading $ARGV[2]";
+
+foreach (@newIgnore){
+	print IGNORELIST2 "$_\n";
+}
+
+close IGNORELIST2;
+
+
+open (RStatTable, ">>$ARGV[4]") or die "error reading $ARGV[4]";
+open (RStatCC, ">>$ARGV[5]") or die "error reading $ARGV[5]";
+open (RStatAPL, ">>$ARGV[6]") or die "error reading $ARGV[6]";
+
+
+foreach (@Rstats){
+	print RStatTable "$_\n";
+	@OneRstat = split(/ /, $_);
+	#print "$OneRstat[5]";
+	print RStatCC "$OneRstat[1]\t$OneRstat[5]\n";
+	print RStatAPL "$OneRstat[1]\t$OneRstat[8]\n";
+}
+
+close RStatTable;
+
 
 =comment
 #update the initlist
