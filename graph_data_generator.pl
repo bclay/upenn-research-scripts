@@ -31,13 +31,15 @@ my @newIgnore;
 my @Rstats;
 my @OneRstat;
 
+my $addedLen = 0;
 
 #import a list of genes (on Arda figure and genes that have already been added)
 open (INITLIST, "<$ARGV[0]") or die "error reading $ARGV[0]";
 while (<INITLIST>){
 	chomp;
+	$addedLen++;
 	$hgene1 = $_;
-	$InitList{$hgene1} = 1;
+	$InitList{$hgene1} = $addedLen;
 	#print $hgene1 . "\t$InitList{$hgene1}\n";
 }
 close INITLIST;
@@ -64,37 +66,48 @@ do{
 		@lines = qx (grep -w "$hgene2" "$ARGV[3]");
 		if (@lines){
 		
-		$AddList{$hgene2} = 1;
 	
-		$str = "F2_" . $hgene2 . "_M1.txt";
-		print $str . "\n";
+			$str = "F4_" . $hgene2 . "_M1.txt";
+			print $str . "\n";
+			$str = "./file_dump/" . $str;
 
-		#add current hgene to file
-		print ADDTO "$hgene2\n";
 
-		#run the map1 perl script
-		local @ARGV = ("map1_generator.pl", "F2_added_hgenes.txt", "Database1v10.txt", "$str");
-		system("perl", @ARGV);
+			#run the map1 perl script
+			local @ARGV = ("map1_generator.pl", "F2_added_hgenes.txt", "Database1v10.txt", "$str");
+			system("perl", @ARGV);
 
-		$str = "./" . $str;
-		#read an R script
-		my $R = Statistics::R->new();
-		$R->startR;
-		$R-> send(qq'd <-read.delim("$str",header=F)');
-		#my $command = q'd <-read.delim("./$str",header=F)';
-		#print "Running [$command]\n";
-		#$R->send($command);
-		$R-> send(q'source("./Arda_stat_generator.r")');
-		#my $output = $R->get('rstr');
-		#$R -> send('cat(z, "\t", y, "\t", x, "\t", w, "\t", v, "\t", t, "\t", s, "\t", r, "\n")');
-		$R -> send('cat(z,y,x,w,v,t,s,r,"\n")');
-		my $output = $R -> read();
-		$output = $hgene2 . " " . $output;
-		push(@Rstats, $output);
-		$R->stop();
-=comment
-=cut
-		$count++;
+
+			#read an R script
+			my $R = Statistics::R->new();
+			$R->startR;
+			$R-> send(qq'd <-read.delim("$str",header=F)');
+			#my $command = q'd <-read.delim("./$str",header=F)';
+			#print "Running [$command]\n";
+			#$R->send($command);
+			$R-> send(q'source("./Arda_stat_generator.r")');
+			#my $output = $R->get('rstr');
+			#$R -> send('cat(z, "\t", y, "\t", x, "\t", w, "\t", v, "\t", t, "\t", s, "\t", r, "\n")');
+			#properly locate genes that don't add edges to the network
+			if(z > $addedLen){
+
+				#add current hgene to file
+				print ADDTO "$hgene2\n";
+				$AddList{$hgene2} = 1;
+				$R -> send('cat(z,y,x,w,v,t,s,r,"\n")');
+				my $output = $R -> read();
+				$output = $hgene2 . " " . $output;
+				$count++;
+				push(@Rstats, $output);
+			}
+			else
+			#add to empty list
+			{
+				push(@newIgnore, $hgene2);
+				
+			}
+			
+			#print the table
+			$R->stop();
 		}	
 		else{
 			#add to empty list
@@ -102,7 +115,7 @@ do{
 		}
 	}
 }
-until eof || $count == 53;
+until eof || $count == 2;
 close TOADD;
 close ADDTO;
 

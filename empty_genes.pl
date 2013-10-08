@@ -14,13 +14,14 @@ use warnings;
 my %OnMap;
 my %OffMap;
 my $finalGene;
+my $hgene;
 
 open(ONMAP, "<$ARGV[1]") or die "error reading $ARGV[1]";
 
 while(<ONMAP>){
 	chomp;
 	$finalGene = $_;
-	%OnMap{$finalGene} = 1;
+	$OnMap{$finalGene} = 1;
 }
 
 close ONMAP;
@@ -29,19 +30,20 @@ open(OFFMAP, "<$ARGV[2]") or die "error reading $ARGV[2]";
 
 while(<OFFMAP>){
 	chomp;
-	%OffMap{$_} = 1;
+	my $gene1 = $_;
+	$OffMap{$gene1} = 1;
 }
 
 close OFFMAP;
 
 open(LONGLIST, "<$ARGV[0]") or die "error reading $ARGV[0]";
-open(OFFMAP2, ">$ARGV[2]") or die "error reading $ARGV[2]";
+open(OFFMAP2, ">>$ARGV[2]") or die "error reading $ARGV[2]";
 
 do{
 	$hgene = <LONGLIST>;
 	chomp($hgene);
 	if(!(exists $OnMap{$hgene}) && !(exists $OffMap{$hgene})){
-		print OFFMAP2 "$hgene";
+		print OFFMAP2 "$hgene\n";
 	}
 }
 until ($hgene eq $finalGene);
