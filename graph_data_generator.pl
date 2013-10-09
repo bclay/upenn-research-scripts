@@ -97,6 +97,7 @@ do{
 				my $output = $R -> read();
 				$output = $hgene2 . " " . $output;
 				$count++;
+				$addedLen++;
 				push(@Rstats, $output);
 			}
 			else
