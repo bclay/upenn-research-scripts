@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+
 #adds genes one-by-one to a list for an Arda figure, then generates map1 and runs an R script on that
 #the final result is a tab-delimited table with datapoints
 #
@@ -9,7 +9,9 @@
 #2:IN:list of hgenes with no values in graph
 #3:IN:DB
 #4:OUT:table with graph stats
-
+#5:OUT:CC
+#6:OUT:APL
+#7:BOTH:Intermediate (outV-.txt)
 
 use strict;
 use warnings;
@@ -65,15 +67,22 @@ do{
 	if (!(exists $InitList{$hgene2}) && !(exists $AddList{$hgene2}) && !(exists $IgnoreList{$hgene2})){
 		@lines = qx (grep -w "$hgene2" "$ARGV[3]");
 		if (@lines){
-		
-	
+			#generate the temp file
+			open (TEMP, ">$ARGV[7]") or die "error reading $ARGV[7]";
+			foreach my $key (keys %InitList){
+				print TEMP "$key\n";
+			}	
+			print TEMP "$hgene2\n";
+			close TEMP;
+
+			#make new map file
 			$str = "F4_" . $hgene2 . "_M1.txt";
 			print $str . "\n";
 			$str = "./file_dump/" . $str;
 
 
 			#run the map1 perl script
-			local @ARGV = ("map1_generator.pl", "F2_added_hgenes.txt", "Database1v10.txt", "$str");
+			local @ARGV = ("map1_generator.pl", "$ARGV[7]", "Database1v10.txt", "$str");
 			system("perl", @ARGV);
 
 
@@ -85,14 +94,15 @@ do{
 			#print "Running [$command]\n";
 			#$R->send($command);
 			$R-> send(q'source("./Arda_stat_generator.r")');
+			my $z = $R-> get('z');
 			#my $output = $R->get('rstr');
 			#$R -> send('cat(z, "\t", y, "\t", x, "\t", w, "\t", v, "\t", t, "\t", s, "\t", r, "\n")');
 			#properly locate genes that don't add edges to the network
-			if(z > $addedLen){
+			if($z > $addedLen){
 
 				#add current hgene to file
 				print ADDTO "$hgene2\n";
-				$AddList{$hgene2} = 1;
+				$InitList{$hgene2} = 1;
 				$R -> send('cat(z,y,x,w,v,t,s,r,"\n")');
 				my $output = $R -> read();
 				$output = $hgene2 . " " . $output;
@@ -116,7 +126,7 @@ do{
 		}
 	}
 }
-until eof || $count == 2;
+until eof || $count == 888888888888888888888888888888888888888888888888888888888888888888888888888888880;
 close TOADD;
 close ADDTO;
 
@@ -144,7 +154,8 @@ foreach (@Rstats){
 }
 
 close RStatTable;
-
+close RStatCC;
+close RStatAPL;
 
 =comment
 #update the initlist
