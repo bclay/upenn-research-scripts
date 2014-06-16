@@ -14,10 +14,19 @@ open(HGENES, "<$ARGV[0]") or die "error reading $ARGV[0]";
 
 #declare variables
 my $hgene;
+my $maxLen = 0;
 my @temp;
 my $line;
 my @tokens;
-my %HoProf
+my %HoProf;
+my $key;
+my @value;
+my $cat;
+
+
+my @comptable;
+my $line2;
+my @tokens2;
 
 #parse the initial gene list and save in a data strcture
 while(<HGENES>){
@@ -25,6 +34,9 @@ while(<HGENES>){
 
 	#initialize hgene variable
 	$hgene = $_;
+
+	#increment count
+	++$maxLen;
 
 	#find all lines in hcv with that hgene
 	@temp = qx(grep -w "$hgene" "$ARGV[1]");
@@ -51,7 +63,37 @@ while(<HGENES>){
 }
 close HGENES;
 
-#if the comparison profile is the same
+#module that sorts profiles into categories
+#0: completely the same
+#>0 && <1: some gaps, but otherwise the same
+#1-maxLen: 1 diff, # depending on location
+#>maxLen: too many diffs to matter
+sub sorter{
+	
+}
+
+#parses data strcuture to sort by profile similarity
+while(($key,@value) = each %HoProf){
+	$cat = sorter @value;
+}
+
+
+
+
+open(OUT1, ">$ARGV[3]") or die "error opening $ARGV[3]";
 
 #prepare output
-foreach
+foreach my $key2 (keys %HoProf){
+	@comptable = qx(grep -w "$key2" "ARGV[2]");
+	foreach(@comptable){
+		chomp;
+		$line2 = $_;
+		@tokens2 = split (/\t/, $line2);
+		if ($tokens2[0] eq $key2){
+			print OUT1 "$tokens2[0]\ttokens2[2]\t";
+			print OUT1 "@{$HoProf{$key2}}\n";
+		}
+	}
+}
+
+close OUT1;
