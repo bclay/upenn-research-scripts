@@ -82,8 +82,7 @@ sub sorter{
 	$second = "x";
 	$count++ for @_;
 	if ($count * 2 < $maxLen){
-		print $maxLen;
-		return ($maxLen + 1);
+		return ($maxLen + 15);
 	}
 	else{
 		$c = 0;
@@ -99,7 +98,7 @@ sub sorter{
 						$first = $second;
 					}
 					else{
-						return ++$maxLen;
+						return ($maxLen + 1);
 					}
 				}
 			}
@@ -138,10 +137,10 @@ foreach my $key2 (sort {$HoCats{$a} cmp $HoCats{$b}} keys %HoCats){
 		$line2 = $_;
 		@tokens2 = split (/\t/, $line2);
 		if ($tokens2[0] eq $key2){
-			print OUT1 "$tokens2[0]\t$HoCats{$key2}\t$tokens2[2]\n";
+			print OUT1 "$tokens2[0]\t$HoCats{$key2}\t$tokens2[4]\n";
 			$c = 0;
 			foreach(@{$HoProf{$key2}}){
-				print OUT1 "@{$HoProf{$key2}}[$c] : $_\n";
+				print OUT1 "@{$HoHgenes{$key2}}[$c] : $_\n";
 				$c++;
 			}
 		}
