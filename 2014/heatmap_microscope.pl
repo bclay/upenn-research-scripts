@@ -19,11 +19,13 @@ my @temp;
 my $line;
 my @tokens;
 my %HoProf;
+my %HoHgenes;
 my $key;
 my @value;
 my $cat;
-
-
+my %HoCats
+my $c;
+my $second;
 my @comptable;
 my $line2;
 my @tokens2;
@@ -54,10 +56,12 @@ while(<HGENES>){
 		#if the comparison id already exists
 		if (exists $HoProf{$tokens[1]}){
 			push (@{$HoProf{$tokens[1]}}, $tokens[2]);
+			push (@{$HoHgenes{$tokens[1]}}, $hgene);
 		}
 		#if the comparison id is novel
 		else{
-			$HoProf{$tokens[1]} = [$tokens[2]];
+			$HoHgenes{$tokens[1]} = [$tokens[2]];
+			$HoHgenes{$tokens[1]} = [$hgene];
 		}
 	}
 }
@@ -69,12 +73,29 @@ close HGENES;
 #1-maxLen: 1 diff, # depending on location
 #>maxLen: too many diffs to matter
 sub sorter{
-	
+	my $count++ for @_;
+	if ($count * 2 < $maxLen){
+		++$maxLen;
+	}
+	else{
+		$c = 0;
+		my $first = $_[0];
+		foreach (@_){
+			++$c;
+			if ($first ne $_){
+				$second = $_;
+			}
+			else{
+
+			}
+		}
+	}
 }
 
 #parses data strcuture to sort by profile similarity
 while(($key,@value) = each %HoProf){
 	$cat = sorter @value;
+	$HoCats{$key} = $cat;
 }
 
 
@@ -90,8 +111,12 @@ foreach my $key2 (keys %HoProf){
 		$line2 = $_;
 		@tokens2 = split (/\t/, $line2);
 		if ($tokens2[0] eq $key2){
-			print OUT1 "$tokens2[0]\ttokens2[2]\t";
-			print OUT1 "@{$HoProf{$key2}}\n";
+			print OUT1 "$tokens2[0]\t$HoCats{$key2}\ttokens2[2]\t";
+			$c = 0;
+			foreach(@{$HoProf{$key2}}){
+				print OUT1 "@{$HoProf{$key2}}[c] : $_\n";
+				$c++;
+			}
 		}
 	}
 }
