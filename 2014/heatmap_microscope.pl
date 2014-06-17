@@ -79,7 +79,9 @@ close HGENES;
 #>maxLen: too many diffs to matter
 sub sorter{
 	$second = "x";
-	++$count for @_;
+	foreach (@_){
+		++count;
+	}
 	print $count;
 	if ($count * 2 < $maxLen){
 		return ($maxLen + 15);
@@ -143,6 +145,7 @@ foreach my $key2 (sort {$HoCats{$a} cmp $HoCats{$b}} keys %HoCats){
 				print OUT1 "\t$_ : @{$HoHgenes{$key2}}[$c]\n";
 				$c++;
 			}
+			print OUT1 "\n"
 		}
 	}
 }
