@@ -69,6 +69,7 @@ while(<HGENES>){
 			$HoHgenes{$tokens[1]} = [$hgene];
 		}
 	}
+	print $maxLen;
 }
 close HGENES;
 
@@ -81,7 +82,8 @@ sub sorter{
 	$second = "x";
 	$count++ for @_;
 	if ($count * 2 < $maxLen){
-		return ++$maxLen;
+		print $maxLen;
+		return ($maxLen + 1);
 	}
 	else{
 		$c = 0;
@@ -130,14 +132,13 @@ open(OUT1, ">$ARGV[3]") or die "error opening $ARGV[3]";
 
 #prepare output
 foreach my $key2 (sort {$HoCats{$a} cmp $HoCats{$b}} keys %HoCats){
-	print OUT1 "$key2\t$HoCats{$key2}\n";
 	@comptable = qx(grep -w "$key2" "$ARGV[2]");
 	foreach(@comptable){
 		chomp;
 		$line2 = $_;
 		@tokens2 = split (/\t/, $line2);
 		if ($tokens2[0] eq $key2){
-			print OUT1 "$tokens2[0]\t$HoCats{$key2}\ttokens2[2]\t";
+			print OUT1 "$tokens2[0]\t$HoCats{$key2}\t$tokens2[2]\n";
 			$c = 0;
 			foreach(@{$HoProf{$key2}}){
 				print OUT1 "@{$HoProf{$key2}}[$c] : $_\n";
