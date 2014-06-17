@@ -18,6 +18,7 @@ my $maxLen = 0;
 my @temp;
 my $line;
 my @tokens;
+my %hgeneInput;
 my %HoProf;
 my %HoHgenes;
 my $key;
@@ -39,6 +40,9 @@ while(<HGENES>){
 
 	#increment count
 	++$maxLen;
+
+	#add to hgenee array
+	$hgeneInput{$hgene} = $maxLen;
 
 	#find all lines in hcv with that hgene
 	@temp = qx(grep -w "$hgene" "$ARGV[1]");
@@ -73,9 +77,10 @@ close HGENES;
 #1-maxLen: 1 diff, # depending on location
 #>maxLen: too many diffs to matter
 sub sorter{
+	$second = x;
 	my $count++ for @_;
 	if ($count * 2 < $maxLen){
-		++$maxLen;
+		return ++$maxLen;
 	}
 	else{
 		$c = 0;
@@ -83,12 +88,30 @@ sub sorter{
 		foreach (@_){
 			++$c;
 			if ($first ne $_){
-				$second = $_;
+				if ($second eq "x"){
+					$second = $_;
+				}
+				else{
+					if($second eq $_){
+						$first = $second;
+					}
+					else{
+						return ++$maxLen;
+					}
+				}
 			}
 			else{
-
+				if($c == $count){
+					if ($count < $maxLen){
+						return (1 - ($count / $maxLen));
+					}
+					else{
+						return 0;
+					}
+				}
 			}
 		}
+		return 500;
 	}
 }
 
