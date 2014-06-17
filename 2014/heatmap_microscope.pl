@@ -8,7 +8,7 @@
 #3: output file
 
 use strict;
-use warnings
+use warnings;
 
 open(HGENES, "<$ARGV[0]") or die "error reading $ARGV[0]";
 
@@ -24,12 +24,13 @@ my %HoHgenes;
 my $key;
 my @value;
 my $cat;
-my %HoCats
+my %HoCats;
 my $c;
 my $second;
 my @comptable;
 my $line2;
 my @tokens2;
+my $count;
 
 #parse the initial gene list and save in a data strcture
 while(<HGENES>){
@@ -64,7 +65,7 @@ while(<HGENES>){
 		}
 		#if the comparison id is novel
 		else{
-			$HoHgenes{$tokens[1]} = [$tokens[2]];
+			$HoProf{$tokens[1]} = [$tokens[2]];
 			$HoHgenes{$tokens[1]} = [$hgene];
 		}
 	}
@@ -77,8 +78,8 @@ close HGENES;
 #1-maxLen: 1 diff, # depending on location
 #>maxLen: too many diffs to matter
 sub sorter{
-	$second = x;
-	my $count++ for @_;
+	$second = "x";
+	$count++ for @_;
 	if ($count * 2 < $maxLen){
 		return ++$maxLen;
 	}
@@ -117,6 +118,7 @@ sub sorter{
 
 #parses data strcuture to sort by profile similarity
 while(($key,@value) = each %HoProf){
+	$count = 0;
 	$cat = sorter @value;
 	$HoCats{$key} = $cat;
 }
@@ -128,7 +130,8 @@ open(OUT1, ">$ARGV[3]") or die "error opening $ARGV[3]";
 
 #prepare output
 foreach my $key2 (keys %HoProf){
-	@comptable = qx(grep -w "$key2" "ARGV[2]");
+	print OUT1 "$key2\t${$HoProf{$key2}}\n";
+	@comptable = qx(grep -w "$key2" "$ARGV[2]");
 	foreach(@comptable){
 		chomp;
 		$line2 = $_;
@@ -137,7 +140,7 @@ foreach my $key2 (keys %HoProf){
 			print OUT1 "$tokens2[0]\t$HoCats{$key2}\ttokens2[2]\t";
 			$c = 0;
 			foreach(@{$HoProf{$key2}}){
-				print OUT1 "@{$HoProf{$key2}}[c] : $_\n";
+				print OUT1 "@{$HoProf{$key2}}[$c] : $_\n";
 				$c++;
 			}
 		}
