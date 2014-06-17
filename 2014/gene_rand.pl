@@ -1,4 +1,4 @@
-!/usr/bin/perl
+#!/usr/bin/perl
 #6/17/14
 #objective: output a list of x random genes
 #0: # of genes in list
@@ -6,7 +6,7 @@
 #2: output file
 
 use strict;
-use warnings
+use warnings;
 
 open(DATAFILE, "<$ARGV[1]") or die "error reading $ARGV[1]";
 
@@ -26,22 +26,25 @@ while (<DATAFILE>){
 }
 close DATAFILE;
 
-open(OUT, "<$ARGV[2]") or die "error reading $ARGV[2]";
-
+open(OUT, ">$ARGV[2]") or die "error reading $ARGV[2]";
+=begin
 sub eqCheck {
-	if (exists $HoI{$_}){
+	if (exists $HoI{$randInt}){
 		0;
 	}
 	else{
 		1;
 	}
-}
-
-for (my $i = 0; $i < $ARGV[0]; $i++){
-	$randInt = int(rand($ARGV[0]));
-	
 	while(eqCheck $randInt){
 		$randInt = int(rand($ARGV[0]));
+	}
+}
+=cut
+for (my $i = 0; $i < $ARGV[0]; $i++){
+	$randInt = int(rand(scalar @genes));
+	
+	if (index($genes[$randInt],":") || index($genes[$randInt], ";")){
+		$randInt = int(rand(scalar @genes));
 	}
 
 	print OUT "$genes[$randInt]\n"
