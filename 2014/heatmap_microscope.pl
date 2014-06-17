@@ -129,8 +129,8 @@ while(($key,@value) = each %HoProf){
 open(OUT1, ">$ARGV[3]") or die "error opening $ARGV[3]";
 
 #prepare output
-foreach my $key2 (keys %HoProf){
-	print OUT1 "$key2\t${$HoProf{$key2}}\n";
+foreach my $key2 (sort {$HoCats{$a} cmp $HoCats{$b}} keys %HoCats){
+	print OUT1 "$key2\t$HoCats{$key2}\n";
 	@comptable = qx(grep -w "$key2" "$ARGV[2]");
 	foreach(@comptable){
 		chomp;
