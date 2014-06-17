@@ -80,7 +80,7 @@ close HGENES;
 sub sorter{
 	$second = "x";
 	foreach (@_){
-		++count;
+		$count = $count + 1;
 	}
 	print $count;
 	if ($count * 2 < $maxLen){
