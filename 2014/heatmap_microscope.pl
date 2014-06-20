@@ -120,9 +120,9 @@ sub sorter{
 while(($key,@value) = each %HoProf){
 	$count = @value;
 	print "$key\t$count\t";
-	print join(", ", @value);
+	print join(", ", @{$HoProf{$key}});
 	print "\n";
-	$cat = sorter @value;
+	$cat = sorter @{$HoProf{$key}};
 	$HoCats{$key} = $cat;
 }
 
