@@ -47,8 +47,6 @@ while(<HGENES>){
 
 	#find all lines in hcv with that hgene
 	@temp = qx(grep -w "$hgene" "$ARGV[1]");
-	my $this = @temp;
-	print "$this\n";
 
 	#create a hash with comparison id keys and aggregate profiles
 	foreach (@temp){
@@ -62,13 +60,11 @@ while(<HGENES>){
 
 		#if the comparison id already exists
 		if (exists $HoProf{$tokens[1]}){
-			print "a\n";
 			push (@{$HoProf{$tokens[1]}}, $tokens[2]);
 			push (@{$HoHgenes{$tokens[1]}}, $hgene);
 		}
 		#if the comparison id is novel
 		else{
-			print "b\n";
 			$HoProf{$tokens[1]} = [$tokens[2]];
 			$HoHgenes{$tokens[1]} = [$hgene];
 		}
