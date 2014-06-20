@@ -92,7 +92,7 @@ sub sorter{
 			if ($first ne $_){
 				if ($second eq "x"){
 					$second = $_;
-					if (c == 2){
+					if ($c == 2){
 						$q = 1;
 					}
 				}
