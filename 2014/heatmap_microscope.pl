@@ -80,6 +80,7 @@ close HGENES;
 sub sorter{
 	$second = "x";
 	my $q = 0;
+	my $r = 0;
 
 	if ($count * 2 <= $maxLen){
 		return ($count * 2) + 100;
@@ -101,6 +102,10 @@ sub sorter{
 						my $it = $first;
 						$first = $second;
 						$second = $it;
+
+						if($q){
+							$r = 1;
+						}
 					}
 					else{
 						return ($maxLen + 1);
@@ -132,7 +137,7 @@ sub sorter{
 								}
 							}
 							else{
-								if ($q){
+								if ($r){
 									return 1;
 								}
 								else{
