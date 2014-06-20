@@ -118,7 +118,18 @@ sub sorter{
 						}
 						else{
 							if ($second eq "x"){
-								return 0;
+								if($first eq "-1"){
+									return 0.01;
+								}
+								elsif($first eq "1"){
+									return 0.02;
+								}
+								elsif($first eq "Y"){
+									return 0.03;
+								}
+								else{
+									return 0; 
+								}
 							}
 							else{
 								if ($q){
