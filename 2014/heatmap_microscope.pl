@@ -119,7 +119,12 @@ sub sorter{
 					}
 					else{
 						if ($first eq "0" || $first eq "N"){
-							return 300;
+							if($r){
+								return 0;
+							}
+							else{
+								return 300;
+							}
 						}
 						else{
 							if ($second eq "x"){
@@ -133,12 +138,12 @@ sub sorter{
 									return 0.03;
 								}
 								else{
-									return 0; 
+									return 100; 
 								}
 							}
 							else{
 								if ($r){
-									return 1;
+									return 0;
 								}
 								else{
 									return 2;
