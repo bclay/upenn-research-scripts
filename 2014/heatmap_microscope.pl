@@ -119,7 +119,9 @@ sub sorter{
 #parses data strcuture to sort by profile similarity
 while(($key,@value) = each %HoProf){
 	$count = @value;
-	print "$key $count @value\n";
+	print "$key\t$count\t";
+	print join(", ", @value);
+	print "\n";
 	$cat = sorter @value;
 	$HoCats{$key} = $cat;
 }
