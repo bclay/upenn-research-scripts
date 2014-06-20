@@ -79,6 +79,7 @@ close HGENES;
 #>maxLen: too many diffs to matter
 sub sorter{
 	$second = "x";
+	my $q = 0;
 
 	if ($count * 2 <= $maxLen){
 		return ($count * 2) + 100;
@@ -91,6 +92,9 @@ sub sorter{
 			if ($first ne $_){
 				if ($second eq "x"){
 					$second = $_;
+					if (c == 2){
+						$q = 1;
+					}
 				}
 				else{
 					if($second eq $_){
@@ -105,11 +109,11 @@ sub sorter{
 			}
 			else{
 				if($c == $count){
-					if ($count < $maxLen){
+					if ($count < $maxLen && $second ne "x"){
 						return (1 - ($count / $maxLen));
 					}
 					else{
-						if ($first eq "0"){
+						if ($first eq "0" || $first eq "N"){
 							return 300;
 						}
 						else{
@@ -117,7 +121,12 @@ sub sorter{
 								return 0;
 							}
 							else{
-								return 1;
+								if ($q){
+									return 1;
+								}
+								else{
+									return 2;
+								}
 							}
 						}
 					}
