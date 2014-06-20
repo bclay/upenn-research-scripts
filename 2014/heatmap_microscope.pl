@@ -80,7 +80,7 @@ close HGENES;
 sub sorter{
 	$second = "x";
 
-	if ($count * 2 < $maxLen){
+	if ($count * 2 <= $maxLen){
 		return ($count * 2) + 100;
 	}
 	else{
@@ -94,7 +94,9 @@ sub sorter{
 				}
 				else{
 					if($second eq $_){
+						my $it = $first;
 						$first = $second;
+						$second = $it;
 					}
 					else{
 						return ($maxLen + 1);
@@ -107,21 +109,28 @@ sub sorter{
 						return (1 - ($count / $maxLen));
 					}
 					else{
-						return 0;
+						if ($first eq "0"){
+							return 300;
+						}
+						else{
+							if ($second eq "x"){
+								return 0;
+							}
+							else{
+								return 1;
+							}
+						}
 					}
 				}
 			}
 		}
-		return 500;
+		return 200;
 	}
 }
 
 #parses data strcuture to sort by profile similarity
 while(($key,@value) = each %HoProf){
-	$count = @value;
-	print "$key\t$count\t";
-	print join(", ", @{$HoProf{$key}});
-	print "\n";
+	$count = @{$HoProf{$key}};
 	$cat = sorter @{$HoProf{$key}};
 	$HoCats{$key} = $cat;
 }
@@ -132,7 +141,7 @@ while(($key,@value) = each %HoProf){
 open(OUT1, ">$ARGV[3]") or die "error opening $ARGV[3]";
 
 #prepare output
-foreach my $key2 (sort {$HoCats{$a} cmp $HoCats{$b}} keys %HoCats){
+foreach my $key2 (sort {$HoCats{$a} <=> $HoCats{$b}} keys %HoCats){
 	@comptable = qx(grep -w "$key2" "$ARGV[2]");
 	foreach(@comptable){
 		chomp;
