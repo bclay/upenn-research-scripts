@@ -79,8 +79,7 @@ close HGENES;
 #>maxLen: too many diffs to matter
 sub sorter{
 	$second = "x";
-	$count = @_;
-	print $count;
+
 	if ($count * 2 < $maxLen){
 		return ($count * 2) + 100;
 	}
@@ -119,8 +118,9 @@ sub sorter{
 
 #parses data strcuture to sort by profile similarity
 while(($key,@value) = each %HoProf){
-	$count = 0;
-	$cat = &sorter(@value);
+	$count = @value;
+	print $count;
+	$cat = sorter @value;
 	$HoCats{$key} = $cat;
 }
 
