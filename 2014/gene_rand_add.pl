@@ -31,7 +31,6 @@ open(OUT, ">$ARGV[3]") or die "error reading $ARGV[3]";
 open(INITFILE, "<$ARGV[2]") or die "error reading $ARGV[2]"; 
 
 while (<INITFILE>) {
-	chomp;
 	print OUT "$_";
 }
 
