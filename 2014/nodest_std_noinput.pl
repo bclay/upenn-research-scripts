@@ -6,13 +6,13 @@ use warnings;
 use Statistics::Basic qw(:all nofill);
 
 my $hgene;
-my @hgenes;
+my %hgenes;
 
 open(INPUT, "<$ARGV[1]") or die "error reading $ARGV[0]";
 while(<INPUT>){
 	chomp;
 	$hgene = $_;
-	push(@hgenes; $hgene);
+	$hgenes{$hgene} = 1;
 }
 
 
@@ -35,7 +35,7 @@ while (<FULL>){
 	@tokens = split(/\t/, $line);
 	$count++;
 
-	if (@hgenes contains $tokens[0]) {
+	if (exists($hgenes{$tokens[0]})) {
 		print "REMOVING $tokens[0]\n"
 	} else {
 		if ($count>1){
