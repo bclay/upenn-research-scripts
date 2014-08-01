@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #6/17/14
-#objective: output a list of x random genes
+#objective: 
 #0: # of genes in list
 #1: table with ordered SE output: col 1 is gene ID, col 2 is rating, 
 #   col 3 is normalized rating
@@ -10,12 +10,15 @@ use warnings;
 use Graph::Centrality::Pagerank;
 use Data::Dump qw(dump);
 
-open(OUT, ">$ARGV[0]") or die "error reading $ARGV[0]";
+#open(OUT, ">$ARGV[0]") or die "error reading $ARGV[0]";
 
 my $r = Graph::Centrality::Pagerank->new();
 my $li = [[1,2],[2,3]];
-#my nodeWeights => {1 =>};
-$r->getPagerankOfNodes (listOfEdges => $li);
+my $nw = {};
+$nw->{1} = 0.9;
+$nw->{2} = 0.1;
+$nw->{3} = 0.1;
+dump $r->getPagerankOfNodes (listOfEdges => $li, nodeWeights => $nw);
 
 
-close OUT;
+#close OUT;
