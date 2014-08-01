@@ -9,7 +9,7 @@ use strict;
 use warnings;
 use Graph::Centrality::Pagerank;
 use Data::Dump qw(dump);
-
+use Scalar::Util qw(reftype);
 
 #declare variables
 my $li = [];
@@ -24,7 +24,7 @@ open(NW, "<$ARGV[0]") or die "error reading $ARGV[0]";
 
 
 while(<NW>){
-	if ($count <=100){
+	if ($count <=10){
 	chomp;
 	$lineNW = $_;
 	@tokensNW = split(/\t/, $lineNW);
@@ -44,19 +44,28 @@ while(<NW>){
 close NW;
 
 
-open(OUT, ">$ARGV[2]") or die "error reading $ARGV[2]";
+#open(OUT, ">$ARGV[2]") or die "error reading $ARGV[2]";
 
 
 my $r = Graph::Centrality::Pagerank->new();
 
 
 $r->getPagerankOfNodes (listOfEdges => $li, nodeWeights => $nw);
+
+#print ref($r);
+#print "\n\n\n\n";
+#print reftype($r);
+
 my $hgene;
+print ref($r->{"defaultParameters"});
+#print $r->{819};
 for (keys %$r){
 	$hgene = $_;
-	print OUT "$hgene\t";
-	print OUT $r->{$hgene};
-	print OUT "\n";
+	print "$hgene\t";
+	print $r->{$hgene};
+	print "\n";
 }
 
-close OUT;
+print "the keys...", sort keys %{$r->{"defaultParameters"}}, "...\n";
+
+#close OUT;
