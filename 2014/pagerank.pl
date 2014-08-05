@@ -4,12 +4,15 @@
 #0: # of genes in list
 #1: table with ordered SE output: col 1 is gene ID, col 2 is rating, 
 #   col 3 is normalized rating
+#2: DB10
+#3: out
 
 use strict;
 use warnings;
 use Graph::Centrality::Pagerank;
-use Data::Dump qw(dump);
+#use Data::Dump qw(dump);
 use Scalar::Util qw(reftype);
+use Data::Dump;
 
 #declare variables
 my $li = [];
@@ -21,6 +24,7 @@ my @tokensDB;
 my $count =0;
 #read in the node weights
 open(NW, "<$ARGV[0]") or die "error reading $ARGV[0]";
+
 
 
 while(<NW>){
@@ -38,7 +42,7 @@ while(<NW>){
 		push(@$li,[$tokensDB[0],$tokensDB[1]]);
 	}
 	$count++;
-	print "$tokensNW[0]\n";
+	#print "$tokensNW[0]\n";
 }}
 
 close NW;
@@ -50,8 +54,9 @@ close NW;
 my $r = Graph::Centrality::Pagerank->new();
 
 
-$r->getPagerankOfNodes (listOfEdges => $li, nodeWeights => $nw);
+dd $r->getPagerankOfNodes (listOfEdges => $li, nodeWeights => $nw);
 
+=pod
 #print ref($r);
 #print "\n\n\n\n";
 #print reftype($r);
@@ -68,4 +73,5 @@ for (keys %$r){
 
 print "the keys...", sort keys %{$r->{"defaultParameters"}}, "...\n";
 
-#close OUT;
+#close OUT; 
+=cut
