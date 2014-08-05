@@ -8,8 +8,28 @@
 use strict;
 use warnings;
 
-open()
+#declare variables
+my $line;
+my @tokens;
+my @value;
+my %HoG;
 
-while(){
+open(IN, "<$ARGV[0]") or die "error reading $ARGV[0]";
 
+while(<IN>){
+	chomp;
+	$line = $_;
+	if ($line ne "{" && $line ne "}"){
+		#parse the line and save info in a data structure
+		@tokens = split(' ', $line);
+		@value = split(',', $tokens[2]);
+		$HoG{$tokens[0]} = $value[0];
+	}
+}
+
+close IN;
+open(OUT, ">$ARGV[1]") or die "error opening $ARGV[1]";
+
+foreach my $key (sort {$HoG{$b} <=> $HoG{$a}} keys %HoG){
+	print OUT "$key\t$HoG{$key}\n";
 }

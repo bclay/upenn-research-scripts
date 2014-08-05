@@ -23,12 +23,12 @@ my @temp;
 my @tokensDB;
 my $count =0;
 #read in the node weights
-open(NW, "<$ARGV[0]") or die "error reading $ARGV[0]";
+open(NW, "<$ARGV[1]") or die "error reading $ARGV[1]";
 
 
 
 while(<NW>){
-	if ($count <=10){
+	if ($count <=$ARGV[0]){
 	chomp;
 	$lineNW = $_;
 	@tokensNW = split(/\t/, $lineNW);
@@ -36,7 +36,7 @@ while(<NW>){
 	$nw->{$tokensNW[0]} = $tokensNW[2];
 
 	#search the database for any entries containing this node
-	@temp = qx (grep -w "$tokensNW[0]" "$ARGV[1]");
+	@temp = qx (grep -w "$tokensNW[0]" "$ARGV[2]");
 	foreach my $lineDB (@temp){
 		@tokensDB = split(/\t/, $lineDB);
 		push(@$li,[$tokensDB[0],$tokensDB[1]]);
