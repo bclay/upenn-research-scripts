@@ -32,13 +32,23 @@ my %HoA;
 for(my $i = 0; $i < 9; $i++){
 	open(FILE, "<$ARGV[$i]") or die "error reading $ARGV[$i]";
 	$rank = 0;
-	while(<FILE>){
-		chomp;
-		$line = $_;
+	my @lines = (<FILE>);
+	while($rank < 200){
+		$line = $lines[$rank];
+		chomp $line;
 		@tokens = split(/\t/,$line);
 		$rank++;
 		if(!exists $HoA{$tokens[0]}){
-			$HoA{$tokens[0]} = (0,0,0,0,0,0,0,0,0);
+			${$HoA{$tokens[0]}}[0] = 0;
+			${$HoA{$tokens[0]}}[1] = 0;
+			${$HoA{$tokens[0]}}[2] = 0;
+			${$HoA{$tokens[0]}}[3] = 0;
+			${$HoA{$tokens[0]}}[4] = 0;
+			${$HoA{$tokens[0]}}[5] = 0;
+			${$HoA{$tokens[0]}}[6] = 0;
+			${$HoA{$tokens[0]}}[7] = 0;
+			${$HoA{$tokens[0]}}[8] = 0;
+
 		}
 		print "$i\t";
 		print "$tokens[0]\t";
